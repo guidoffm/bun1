@@ -24,7 +24,7 @@ app.use((req: any, _res: any, next: any) => {
   next();
 });
 
-app.get("/", (_req, res) => {
+app.get("/api/test", (_req, res) => {
     // throw new Error("BROKEN"); // Express will catch this on its own.
   res.send({ message: "Hello World!" });
 });
