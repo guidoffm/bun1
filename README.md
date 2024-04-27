@@ -6,4 +6,4 @@
 
 ## Build and run in Docker
 
-    docker compose up --build -d
+See [README.Docker.md](README.Docker.md)
