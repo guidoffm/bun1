@@ -4,5 +4,6 @@
     },
     "devDependencies": {
         "@types/express": "^4.17.21"
-    }
+    },
+    "version": "1.0.0"
 }
