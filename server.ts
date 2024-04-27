@@ -24,7 +24,15 @@ app.use((req: any, _res: any, next: any) => {
   next();
 });
 
-app.get("/healtz", (_req, res) => {
+app.get("/healthz", (_req, res) => {
+  res.status(200).send("OK");
+});
+
+app.get("/livez", (_req, res) => {
+  res.status(200).send("OK");
+});
+
+app.get("/readyz", (_req, res) => {
   res.status(200).send("OK");
 });
 
