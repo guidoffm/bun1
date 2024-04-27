@@ -12,5 +12,5 @@
     "@types/jsonwebtoken": "^8.5.8",
     "@types/node": "^20.12.7"
   },
-  "version": "2.2.0"
+  "version": "2.3.0"
 }
