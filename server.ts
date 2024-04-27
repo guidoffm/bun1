@@ -1,8 +1,8 @@
 
-import express, { NextFunction, Request, Response } from 'express';
-import bodyParser from 'body-parser';
+import express, { type NextFunction, type Request, type Response } from 'express';
+// import bodyParser from 'body-parser';
 
-import jwt, { DecodeOptions, Jwt, JwtPayload } from 'jsonwebtoken';
+import jwt, { type DecodeOptions, type Jwt, type JwtPayload } from 'jsonwebtoken';
 import jwksClient from 'jwks-rsa';
 
 const app = express();
@@ -18,26 +18,26 @@ app.use(express.static("public"));
 // app.use("/super", require("./routes/super"));
 // app.use("/test", require("./routes/test"));
 // add express middleware to handle errors  
-app.use((err: any, _req: any, res: Response, _next: any) => {
+app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
   console.log(err);
   res.status(500).send("Something broke!");
 });
 
 // add express custom middleware
-app.use((req: any, _res: any, next: any) => {
+app.use((req: Request, _res: Response, next: NextFunction) => {
   console.log(`"${req.url}" requested`);
   next();
 });
 
-app.get("/healthz", (_req, res: Response) => {
+app.get("/healthz", (_req: Request, res: Response) => {
   res.status(200).send("OK");
 });
 
-app.get("/livez", (_req, res: Response) => {
+app.get("/livez", (_req: Request, res: Response) => {
   res.status(200).send("OK");
 });
 
-app.get("/readyz", (_req, res: Response) => {
+app.get("/readyz", (_req: Request, res: Response) => {
   res.status(200).send("OK");
 });
 
@@ -56,15 +56,19 @@ app.use('/api/', async (req: Request, res: Response, next: NextFunction) => {
           // console.log('iss', iss);
           const configResponse = await fetch(`${iss}/.well-known/openid-configuration`);
           const data = await configResponse.json();
-          const jwksUri = data.jwks_uri;
-          // console.log(jwksUri);
-          const client = jwksClient({ jwksUri: jwksUri, timeout: 3000 });
-          const key = await client.getSigningKey(kid);
-          const signingKey = key.getPublicKey();
-          const tokenData = jwt.verify(token, signingKey);
-          console.log('tokenData', tokenData);
-          res.locals['tokenData'] = tokenData;
-          next();
+          if (typeof data === 'object' && data &&  'jwks_uri' in data && typeof data.jwks_uri === 'string') {
+            const jwksUri = data.jwks_uri;
+            // console.log(jwksUri);
+            const client = jwksClient({ jwksUri: jwksUri, timeout: 3000 });
+            const key = await client.getSigningKey(kid);
+            const signingKey = key.getPublicKey();
+            const tokenData = jwt.verify(token, signingKey);
+            console.log('tokenData', tokenData);
+            res.locals['tokenData'] = tokenData;
+            next();
+          } else {
+            throw new Error('Invalid data');
+          }
       } catch (err) {
           console.error(err);
           res.sendStatus(403);
@@ -72,7 +76,7 @@ app.use('/api/', async (req: Request, res: Response, next: NextFunction) => {
   }
 });
 
-app.get("/api/test", (_req, res) => {
+app.get("/api/test", (_req: Request, res: Response) => {
     // throw new Error("BROKEN"); // Express will catch this on its own.
   res.send({ message: "Hello World!" });
 });
