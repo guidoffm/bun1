@@ -2,7 +2,7 @@
 
 ## Local Run
 
-    bun --watch server.ts
+    bun --watch .
 
 ## Build and run in Docker
 
